@@ -4,7 +4,7 @@ let initRow = 'row_1';
 let wordOfDay = ''
 let isCorrect = false;
 async function getWord(){
-    const apiURL = 'https://words.dev-apis.com/word-of-the-day?puzzle=68';
+    const apiURL = 'https://words.dev-apis.com/word-of-the-day?random=1';
     try{
         const response = await fetch(apiURL);
         if(!response){
