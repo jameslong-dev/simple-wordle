@@ -4,7 +4,7 @@ let initRow = 'row_1';
 let wordOfDay = ''
 let isCorrect = false;
 async function getWord(){
-    const apiURL = 'https://words.dev-apis.com/word-of-the-day?random=1';
+    const apiURL = 'https://words.dev-apis.com/word-of-the-day?puzzle=68';
     try{
         const response = await fetch(apiURL);
         if(!response){
@@ -63,25 +63,30 @@ async function nextRow(){
 function matchWord(input){
     let currRow = document.getElementById(initRow);
     const tempWord = wordOfDay.toLocaleUpperCase().split('');
+    const tempWordMap = new Map();
     const tempInput = input.split('');
-    let dupliArr = isDuplicate(tempWord);
-    console.log('hi',dupliArr)
     const tempWordSet = new Set(tempWord);
-    const correctPositions = new Array(tempWord.length).fill(false);
+    const correctPositions = new Array(tempWord.length).fill(false);//offal
     // First pass to mark correct positions
-    for (let i = 0; i < tempWord.length; i++) {
+    for (const char of tempWord) {
+        tempWordMap.set(char, (tempWordMap.get(char) || 0) + 1);
+    }
+    console.log('tempWordMap',tempWordMap)
+    for (let i = 0; i < tempWord.length; i++) {//ffooa
         if (tempWord[i] === tempInput[i]) {
             currRow.children[i].classList.add('correct');
             correctPositions[i] = true;
+            tempWordMap.set(tempWord[i], tempWordMap.get(tempWord[i]) - 1);
         }
     }
-    // Second pass to mark wrong and close positions
+
     for (let i = 0; i < tempWord.length; i++) {
         if (!correctPositions[i]) {
-            if (!tempWordSet.has(tempInput[i])) {
+            if (!tempWordMap.has(tempInput[i]) || tempWordMap.get(tempInput[i]) === 0) {
                 currRow.children[i].classList.add('wrong');
             } else {
                 currRow.children[i].classList.add('close');
+                tempWordMap.set(tempInput[i], tempWordMap.get(tempInput[i]) - 1);
             }
         }
     }
@@ -113,6 +118,12 @@ function isDuplicate(input_array){
         unique.add(input_array[i]);  // O(1)
     }
     return Array.from(new Set(duplicated_element));  // O(n)
+}
+function deleteDupli(arr,element){
+    let index = arr.indexOf(element);
+    arr.splice(index,1)
+
+    return arr;
 }
 async function init(){
     await getWord();
