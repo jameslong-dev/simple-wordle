@@ -11,7 +11,6 @@ async function getWord(){
             throw new Error(`Response Status: ${response.status}`)
         }
         const json = await response.json();
-        console.log(json.word)
         wordOfDay = json.word;
     }catch(err){
         console.log(error.message);
