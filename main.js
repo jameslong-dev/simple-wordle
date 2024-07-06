@@ -17,6 +17,24 @@ async function getWord(){
         console.log(error.message);
     }
 }
+async function checkWord(wordType){
+    const apiURL = 'https://words.dev-apis.com/validate-word';
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const response = await fetch(apiURL, {
+        method: "POST",
+        body: JSON.stringify({ word: wordType }),
+        headers: myHeaders,
+    });
+    const json = await response.json();
+    let isWord = json.validWord;
+
+    if(isWord){
+        return true
+    }else{
+        return false;
+    }
+}
 function isLetter(letter){
     return /^[a-zA-Z]$/.test(letter);
 }
@@ -51,13 +69,20 @@ async function nextRow(){
     let rowNum = 'row_1';
     let count = 1;
     document.addEventListener('keydown',async(event)=>{
-        if(event.key === 'Enter' && word.length === 5 && count<=6){
+        if(event.key === 'Enter'){
+        let result = await checkWord(word.join(''))
+        if(word.length === 5 && count<=6 && !result){
+            alert('no such word')
+        }
+        if(word.length === 5 && count<=6 && result){
             await matchWord(word.join(''));
             count += 1;
             rowNum = `row_${count}`
             initRow = rowNum;
             word =[];
         }
+    }
+
     })
 }
 function matchWord(input){
